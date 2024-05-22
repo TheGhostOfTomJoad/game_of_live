@@ -1,6 +1,7 @@
 package org.example
 
 
+import com.googlecode.lanterna.TextColor
 import com.googlecode.lanterna.input.KeyStroke
 import com.googlecode.lanterna.input.KeyType
 import com.googlecode.lanterna.screen.TerminalScreen
@@ -48,18 +49,19 @@ fun main() {
 
 class Controller {
     private val gui = GUI()
-    private val model = Model(
-        "          \n" +
-                "          \n" +
-                "   x      \n" +
-                "  xx x    \n" +
-                "      x   \n" +
-                "   x      \n" +
-                "    x xx  \n" +
-                "      x   \n" +
-                "          \n" +
-                "          "
-    )
+//    private val model = Model(
+//        "          \n" +
+//                "          \n" +
+//                "   x      \n" +
+//                "  xx x    \n" +
+//                "      x   \n" +
+//                "   x      \n" +
+//                "    x xx  \n" +
+//                "      x   \n" +
+//                "          \n" +
+//                "          "
+//    )
+private val model = Model("   \n   \n   ")
 
     fun playGame() {
         gui.initTerminalConfig()
@@ -70,7 +72,7 @@ class Controller {
         while (true) {
             if (ongoing) {
                 //gui.printGame(model.getRound(), model.getBoard())
-                gui.printBoardLaterna(model.getRound(), model.getBoard())
+                gui.printBoardLaterna(model.getRound(), model)
                 sleep(500)
                 model.playRound()
             }
@@ -115,14 +117,17 @@ class GUI {
         tileDrawer.setInitialSquareSize(board.height, board.width)
     }
 
-    fun printBoardLaterna(round: Int, gameBoard: Board) {
+    fun printBoardLaterna(round: Int, model: Model) {
         tileDrawer.clear()
+        val gameBoard = model.getBoard()
         tileDrawer.updateSquareSize(gameBoard.height, gameBoard.width)
         for (i in 0 until gameBoard.height) {
             for (j in 0 until gameBoard.width) {
-                if (gameBoard.getAt(i, j)) tileDrawer.drawSquare(i, j, tileDrawer.getSquareSize())
+                if (gameBoard.getAt(i, j)) tileDrawer.drawSquare(i, j,TextColor.ANSI.GREEN)
             }
         }
+
+        tileDrawer.drawSquareBorder(model.getSelectedX(),model.getSelectedY(),TextColor.ANSI.RED)
         tileDrawer.refresh()
     }
 
@@ -161,11 +166,18 @@ class Model(boardString: String) {
 //    var secondGameBoard = Board(height, width)
     private val board = Board.fromString(boardString)
     private var round = 0
-    private var selectedX = 0
-    private var selectedY = 0
+    private var selectedRow = 0
+    private var selectedColumn = 0
 
     fun getRound(): Int {
         return round
+    }
+
+    fun getSelectedX(): Int {
+        return selectedRow
+    }
+    fun getSelectedY(): Int {
+        return selectedColumn
     }
 
 
@@ -206,14 +218,16 @@ class Model(boardString: String) {
     }
 
     fun processInput(keyType: KeyType) {
+        println("Selected: $selectedRow, $selectedColumn")
         when (keyType) {
-            KeyType.ArrowLeft -> selectedX = (selectedX - 1) % board.width
-            KeyType.ArrowRight -> selectedX = (selectedX + 1) % board.width
-            KeyType.ArrowUp -> selectedY = (selectedX - 1) % board.height
-            KeyType.ArrowDown -> selectedY = (selectedX + 1) % board.height
+            KeyType.ArrowLeft -> selectedColumn = (selectedColumn - 1) % board.width
+            KeyType.ArrowRight -> selectedColumn= (selectedColumn + 1) % board.width
+            KeyType.ArrowUp -> selectedRow = (selectedRow - 1) % board.height
+            KeyType.ArrowDown -> selectedRow = (selectedRow + 1) % board.height
             KeyType.MouseEvent -> println("mouse clicked")
             else -> {}
         }
+
     }
 
 

@@ -11,8 +11,8 @@ class RectangleDrawer (private val terminal: Screen){
     private var squareSize: Int = 3
 
     //val terminal: Screen = DefaultTerminalFactory().createScreen()
-    private fun drawPixel(row: Int, column: Int) {
-        val emptyCell = fromCharacter(' ', TextColor.ANSI.RED, TextColor.ANSI.GREEN)[0]
+    private fun drawPixel(row: Int, column: Int,color: TextColor) {
+        val emptyCell = fromCharacter(' ', TextColor.ANSI.RED, color)[0]
         terminal.setCharacter(2 * column, row, emptyCell)
         terminal.setCharacter(2 * column + 1, row, emptyCell)
         //terminal.refresh()
@@ -49,18 +49,23 @@ class RectangleDrawer (private val terminal: Screen){
         }
     }
 
-    private fun drawSquareHelper(startRow: Int, startColumn: Int, size: Int) {
+    private fun drawSquareHelper(startRow: Int, startColumn: Int, size: Int,color: TextColor) {
         for (i in 0..<size) {
             for (j in 0..<size) {
-                drawPixel(startRow + i, startColumn + j)
+                drawPixel(startRow + i, startColumn + j,color)
             }
         }
         //terminal.refresh()
     }
 
-    fun drawSquare(i: Int, j: Int, squareSize: Int) {
-        drawSquareHelper(i * squareSize, j * squareSize, squareSize)
+    fun drawSquare(i: Int, j: Int,color: TextColor) {
+        drawSquareHelper(i * squareSize, j * squareSize, squareSize, color)
     }
+
+    fun drawSquareBorder(i: Int, j: Int,color: TextColor) {
+        drawSquareHelper(i * squareSize +1, j * squareSize + 1, squareSize -1, color)
+    }
+
 
     fun clear() {
         terminal.clear()
