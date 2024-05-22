@@ -15,7 +15,7 @@ dependencies {
     //implementation("com.gitlab.klamonte:jexer:1.6.0")
     // https://mvnrepository.com/artifact/com.googlecode.lanterna/lanterna
     implementation("com.googlecode.lanterna:lanterna:3.1.2")
-
+    implementation("com.github.ajalt.mordant:mordant:2.6.0")
 }
 
 tasks.test {

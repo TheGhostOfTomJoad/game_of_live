@@ -1,12 +1,11 @@
 package org.example
 
-import com.googlecode.lanterna.TerminalSize
-import com.googlecode.lanterna.TextCharacter.fromCharacter
-import com.googlecode.lanterna.TextColor
-import com.googlecode.lanterna.input.MouseAction
-import com.googlecode.lanterna.screen.Screen
+import com.github.ajalt.mordant.rendering.TextColors.red
+import com.github.ajalt.mordant.rendering.TextColors.blue
+import com.github.ajalt.mordant.terminal.Terminal
+import com.googlecode.lanterna.screen.TerminalScreen
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory
-import com.googlecode.lanterna.terminal.MouseCaptureMode
+import java.lang.Thread.sleep
 import kotlin.math.max
 import kotlin.math.min
 
@@ -14,125 +13,104 @@ import kotlin.math.min
 fun main() {
 
 
-    val model = Model(
-        " x x x x \n" +
-                   "x x x x x\n" +
-                   "         "
-    )
-    //println(model.getBoard().countNeighbours(1,0))
-    val gui = GUI()
-    gui.initTerminalConfig()
-    gui.setInitialSquareSize(model.getBoard())
-    gui.printBoardLaterna(0,model.getBoard())
+    //val model = Model(
+    //    " x x x x \n" + "x x x x x\n" + "         "
+    //)
+//    //println(model.getBoard().countNeighbours(1,0))
+    //val gui = GUI()
+    val controller = Controller()
+    controller.playGame()
+//    gui.initTerminalConfig()
+//    gui.setInitialSquareSize(model.getBoard())
+//    gui.printBoardLaterna(0,model.getBoard())
 
     //gui.drawPixel(3,0)
     //gui.drawPixel(4,0)
     //gui.drawSquare(1,4,5)
+//    val t = Terminal()
+//    t.println((red on blue)("You can use any of the standard ANSI colors"))
+//    t.cursor.move {
+//        up(3)
+//        startOfLine()
+//        clearScreenAfterCursor()
+//    }
+//    t.cursor.hide(showOnExit = true)
+//    t.println((red on blue)("You can use any of the standard ANSI colors"))
+}
 
 
+class Controller {
+    private val gui = GUI()
+    private val model = Model(
+         "          \n" +
+                    "          \n" +
+                    "   x      \n" +
+                    "  xx x    \n" +
+                    "      x   \n" +
+                    "   x      \n" +
+                    "    x xx  \n" +
+                    "      x   \n" +
+                    "          \n" +
+                    "          "
+    )
 
+    fun playGame() {
+        gui.initTerminalConfig()
+        gui.setInitialSquareSize(model.getBoard())
 
-//    gui.initTerminalConfig()
-//    gui.setInitialSquareSize(model.getBoard())
-//
-//    var ongoing = true
+        var ongoing = true
 //    var mousePos: Pair<Int, Int>?
-//    while (true) {
-//        if (ongoing) {
-//            //gui.printGame(model.getRound(), model.getBoard())
-//            gui.printBoardLaterna(model.getRound(), model.getBoard())
-//            sleep(1000)
-//            model.playRound()
-//        }
-//        if (gui.spaceIsPressed()) {
-//            ongoing = !ongoing
-//        }
+        while (true) {
+            if (ongoing) {
+                //gui.printGame(model.getRound(), model.getBoard())
+                gui.printBoardLaterna(model.getRound(), model.getBoard())
+                sleep(1000)
+                model.playRound()
+            }
+            if (gui.spaceIsPressed()) {
+                ongoing = !ongoing
+            }
 //        mousePos = gui.mouseDown()
 //        println(mousePos)
 //        if (mousePos != null) {
 //            println("mousePos: $mousePos")
 //        }
-//
-//    }
+
+        }
+    }
 }
 
 
 class GUI {
+    private val terminal: TerminalScreen = DefaultTerminalFactory().createScreen()
+    private val tileDrawer = RectangleDrawer(terminal)
+
     fun printGame(round: Int, gameBoard: Board) {
         println("round: $round")
         println(gameBoard.toString())
     }
 
-    private var squareSize: Int = 3 // computeMaxSquareSize(gameBoard,terminal.terminalSize)
-    private var fac = DefaultTerminalFactory()
-    init {
-        fac.setMouseCaptureMode(MouseCaptureMode.CLICK_RELEASE)
-    }
-    private val terminal: Screen =  fac.createScreen()
-
     fun initTerminalConfig() {
 
         terminal.startScreen()
+
         //terminal.setCursorVisible(false)
     }
 
-    private fun drawPixel(row:Int, column:Int){
-        val emptyCell = fromCharacter(' ', TextColor.ANSI.RED, TextColor.ANSI.GREEN)[0]
-        terminal.setCharacter(2* column,row, emptyCell)
-        terminal.setCharacter(2* column + 1,row, emptyCell)
-        //terminal.refresh()
+    fun setInitialSquareSize(board: Board) {
+        tileDrawer.setInitialSquareSize(board.height, board.width)
     }
-
-    private fun computeMaxSquareSizeHelper(gameBoardRows: Int, gameBoardColumns: Int, terminalRows:Int, terminalColumns:Int): Int {
-        val maxSquareHeightPixels = terminalRows / gameBoardRows
-        val maxSquareWidthPixels = terminalColumns / (2 * gameBoardColumns)
-        return min(maxSquareHeightPixels, maxSquareWidthPixels)
-    }
-
-    private fun computeMaxSquareSize(gameBoard: Board, screenSize: TerminalSize): Int {
-
-        return ( computeMaxSquareSizeHelper(gameBoard.height, gameBoard.width,screenSize.rows,screenSize.columns))
-    }
-
-    fun setInitialSquareSize(gameBoard: Board) {
-        squareSize = computeMaxSquareSize(gameBoard,terminal.terminalSize)
-    }
-
-    private fun updateSquareSize(gameBoard: Board) {
-        val newSize: TerminalSize? = terminal.doResizeIfNecessary()
-        if (newSize != null) {
-            squareSize = computeMaxSquareSize(gameBoard,newSize)
-        }
-    }
-
-    fun drawSquareHelper(startRow: Int, startColumn: Int, size: Int) {
-        for (i in 0..<size) {
-            for (j in 0..<size) {
-                drawPixel(startRow + i, startColumn + j)
-            }
-        }
-        //terminal.refresh()
-    }
-
-    private fun drawSquare(i: Int, j: Int, squareSize: Int) {
-        drawSquare(i * squareSize , j * squareSize, squareSize)
-    }
-
 
     fun printBoardLaterna(round: Int, gameBoard: Board) {
-        terminal.clear()
-        updateSquareSize(gameBoard)
+        tileDrawer.clear()
+        tileDrawer.updateSquareSize(gameBoard.height, gameBoard.width)
         for (i in 0 until gameBoard.height) {
             for (j in 0 until gameBoard.width) {
-                if (gameBoard.getAt(i, j))
-                    drawSquare(i  , j , squareSize)
+                if (gameBoard.getAt(i, j)) tileDrawer.drawSquare(i, j, tileDrawer.getSquareSize())
             }
         }
-        terminal.refresh()
+        tileDrawer.refresh()
     }
-
-
-
 
     fun spaceIsPressed(): Boolean {
         val input = terminal.pollInput()
@@ -143,16 +121,16 @@ class GUI {
         }
     }
 
-    fun mouseDown(): Pair<Int, Int>? {
-        val input = terminal.pollInput()
-        println(input != null)
-        println(input is MouseAction)
-        return if (input != null && input is MouseAction &&input.isMouseDown) {
-            Pair   (input.position.column / (squareSize * 2),input.position.column / squareSize)
-        } else {
-            null
-        }
-    }
+//    fun mouseDown(): Pair<Int, Int>? {
+//        val input = terminal.pollInput()
+//        println(input != null)
+//        println(input is MouseAction)
+//        return if (input != null && input is MouseAction &&input.isMouseDown) {
+//            Pair   (input.position.column / (squareSize * 2),input.position.column / squareSize)
+//        } else {
+//            null
+//        }
+//    }
 
 
 }
@@ -236,10 +214,10 @@ class Board(val height: Int, val width: Int) {
     }
 
 
-    fun countNeighbours(row: Int, column: Int): Int {
+    private fun countNeighbours(row: Int, column: Int): Int {
         var acc = 0
-        for (i in max(0,row -1)..min(row + 1,height - 1)) {
-            for (j in max(0,column -1) ..min(column + 1,width - 1)) {
+        for (i in max(0, row - 1)..min(row + 1, height - 1)) {
+            for (j in max(0, column - 1)..min(column + 1, width - 1)) {
                 //print("line${row + i} column ${column + j} ")
                 if ((i != row || j != column) && gameBoard[i][j]) {
                     acc += 1
