@@ -1,14 +1,21 @@
 package org.example
 
-import com.github.ajalt.mordant.rendering.TextColors.red
-import com.github.ajalt.mordant.rendering.TextColors.blue
-import com.github.ajalt.mordant.terminal.Terminal
+
+import com.googlecode.lanterna.input.KeyStroke
+import com.googlecode.lanterna.input.KeyType
 import com.googlecode.lanterna.screen.TerminalScreen
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory
 import java.lang.Thread.sleep
 import kotlin.math.max
 import kotlin.math.min
 
+enum class Control {
+    Left,
+    Right,
+    Up,
+    Down,
+    Tab
+}
 
 fun main() {
 
@@ -42,16 +49,16 @@ fun main() {
 class Controller {
     private val gui = GUI()
     private val model = Model(
-         "          \n" +
-                    "          \n" +
-                    "   x      \n" +
-                    "  xx x    \n" +
-                    "      x   \n" +
-                    "   x      \n" +
-                    "    x xx  \n" +
-                    "      x   \n" +
-                    "          \n" +
-                    "          "
+        "          \n" +
+                "          \n" +
+                "   x      \n" +
+                "  xx x    \n" +
+                "      x   \n" +
+                "   x      \n" +
+                "    x xx  \n" +
+                "      x   \n" +
+                "          \n" +
+                "          "
     )
 
     fun playGame() {
@@ -64,11 +71,18 @@ class Controller {
             if (ongoing) {
                 //gui.printGame(model.getRound(), model.getBoard())
                 gui.printBoardLaterna(model.getRound(), model.getBoard())
-                sleep(1000)
+                sleep(500)
                 model.playRound()
             }
-            if (gui.spaceIsPressed()) {
-                ongoing = !ongoing
+            val pressedKey = gui.getPressedKey()
+            if (pressedKey != null) {
+                if (pressedKey.character == ' ') {
+                    ongoing = !ongoing
+                }
+
+                model.processInput(pressedKey.keyType)
+
+
             }
 //        mousePos = gui.mouseDown()
 //        println(mousePos)
@@ -121,6 +135,15 @@ class GUI {
         }
     }
 
+    fun getPressedKey(): KeyStroke? {
+        return terminal.pollInput()
+
+    }
+
+
+}
+
+
 //    fun mouseDown(): Pair<Int, Int>? {
 //        val input = terminal.pollInput()
 //        println(input != null)
@@ -133,14 +156,13 @@ class GUI {
 //    }
 
 
-}
-
-
 class Model(boardString: String) {
     //    var firstGameBoard = Board(height, width)
 //    var secondGameBoard = Board(height, width)
     private val board = Board.fromString(boardString)
     private var round = 0
+    private var selectedX = 0
+    private var selectedY = 0
 
     fun getRound(): Int {
         return round
@@ -181,6 +203,17 @@ class Model(boardString: String) {
     fun playRound() {
         board.updateBoard()
         round += 1
+    }
+
+    fun processInput(keyType: KeyType) {
+        when (keyType) {
+            KeyType.ArrowLeft -> selectedX = (selectedX - 1) % board.width
+            KeyType.ArrowRight -> selectedX = (selectedX + 1) % board.width
+            KeyType.ArrowUp -> selectedY = (selectedX - 1) % board.height
+            KeyType.ArrowDown -> selectedY = (selectedX + 1) % board.height
+            KeyType.MouseEvent -> println("mouse clicked")
+            else -> {}
+        }
     }
 
 
