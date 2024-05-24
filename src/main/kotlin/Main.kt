@@ -11,45 +11,19 @@ import kotlin.math.max
 import kotlin.math.min
 
 enum class Control {
-    Left,
-    Right,
-    Up,
-    Down,
-    Tab
+    Left, Right, Up, Down, Select, Pause
 }
 
 fun main() {
-
-
-    //val model = Model(
-    //    " x x x x \n" + "x x x x x\n" + "         "
-    //)
-//    //println(model.getBoard().countNeighbours(1,0))
-    //val gui = GUI()
     val controller = Controller()
     controller.playGame()
-//    gui.initTerminalConfig()
-//    gui.setInitialSquareSize(model.getBoard())
-//    gui.printBoardLaterna(0,model.getBoard())
-
-    //gui.drawPixel(3,0)
-    //gui.drawPixel(4,0)
-    //gui.drawSquare(1,4,5)
-//    val t = Terminal()
-//    t.println((red on blue)("You can use any of the standard ANSI colors"))
-//    t.cursor.move {
-//        up(3)
-//        startOfLine()
-//        clearScreenAfterCursor()
-//    }
-//    t.cursor.hide(showOnExit = true)
-//    t.println((red on blue)("You can use any of the standard ANSI colors"))
 }
 
 
 class Controller {
     private val gui = GUI()
-//    private val model = Model(
+
+    //    private val model = Model(
 //        "          \n" +
 //                "          \n" +
 //                "   x      \n" +
@@ -61,37 +35,26 @@ class Controller {
 //                "          \n" +
 //                "          "
 //    )
-private val model = Model("   \n   \n   ")
+    private val model = Model("   \n   \n   ")
 
     fun playGame() {
         gui.initTerminalConfig()
         gui.setInitialSquareSize(model.getBoard())
-
         var ongoing = true
-//    var mousePos: Pair<Int, Int>?
         while (true) {
+            sleep(500)
             if (ongoing) {
-                //gui.printGame(model.getRound(), model.getBoard())
-                gui.printBoardLaterna(model.getRound(), model)
-                sleep(500)
+
                 model.playRound()
             }
             val pressedKey = gui.getPressedKey()
             if (pressedKey != null) {
-                if (pressedKey.character == ' ') {
+                if (pressedKey == Control.Pause) {
                     ongoing = !ongoing
                 }
-
-                model.processInput(pressedKey.keyType)
-
-
+                model.processInput(pressedKey)
             }
-//        mousePos = gui.mouseDown()
-//        println(mousePos)
-//        if (mousePos != null) {
-//            println("mousePos: $mousePos")
-//        }
-
+            gui.printBoardLaterna(model.getRound(), model)
         }
     }
 }
@@ -107,10 +70,7 @@ class GUI {
     }
 
     fun initTerminalConfig() {
-
         terminal.startScreen()
-
-        //terminal.setCursorVisible(false)
     }
 
     fun setInitialSquareSize(board: Board) {
@@ -123,47 +83,48 @@ class GUI {
         tileDrawer.updateSquareSize(gameBoard.height, gameBoard.width)
         for (i in 0 until gameBoard.height) {
             for (j in 0 until gameBoard.width) {
-                if (gameBoard.getAt(i, j)) tileDrawer.drawSquare(i, j,TextColor.ANSI.GREEN)
+                if (gameBoard.getAt(i, j)) tileDrawer.drawSquare(i, j, TextColor.ANSI.GREEN)
             }
         }
-
-        tileDrawer.drawSquareBorder(model.getSelectedX(),model.getSelectedY(),TextColor.ANSI.RED)
+        tileDrawer.drawSquareInner(model.getSelectedX(), model.getSelectedY(), TextColor.ANSI.RED)
         tileDrawer.refresh()
     }
 
-    fun spaceIsPressed(): Boolean {
-        val input = terminal.pollInput()
-        return if (input != null) {
-            input.character == ' '
-        } else {
-            false
+    private fun keyStrokeToMovement(keystroke: KeyStroke): Control? {
+        val result: Control? = when (keystroke.keyType) {
+            KeyType.ArrowLeft -> Control.Left
+            KeyType.ArrowRight -> Control.Right
+            KeyType.ArrowUp -> Control.Up
+            KeyType.ArrowDown -> Control.Down
+            KeyType.MouseEvent -> {
+                println("mouse clicked");null
+            }
+
+            else -> {
+                when (keystroke.character) {
+                    ' ' -> Control.Pause
+                    'x' -> Control.Select
+
+                    else -> {
+                        null
+                    }
+                }
+            }
         }
+        return result
     }
 
-    fun getPressedKey(): KeyStroke? {
-        return terminal.pollInput()
-
+    fun getPressedKey(): Control? {
+        val input = terminal.pollInput()
+        if (input != null) {
+            return keyStrokeToMovement(input)
+        }
+        return null
     }
-
-
 }
 
 
-//    fun mouseDown(): Pair<Int, Int>? {
-//        val input = terminal.pollInput()
-//        println(input != null)
-//        println(input is MouseAction)
-//        return if (input != null && input is MouseAction &&input.isMouseDown) {
-//            Pair   (input.position.column / (squareSize * 2),input.position.column / squareSize)
-//        } else {
-//            null
-//        }
-//    }
-
-
 class Model(boardString: String) {
-    //    var firstGameBoard = Board(height, width)
-//    var secondGameBoard = Board(height, width)
     private val board = Board.fromString(boardString)
     private var round = 0
     private var selectedRow = 0
@@ -176,74 +137,37 @@ class Model(boardString: String) {
     fun getSelectedX(): Int {
         return selectedRow
     }
+
     fun getSelectedY(): Int {
         return selectedColumn
     }
 
-
     fun getBoard(): Board {
         return board
     }
-//
-//    fun getCurrentGameBoard(): Board {
-//        if (round % 2 == 0) {
-//            return firstGameBoard
-//        } else {
-//            return secondGameBoard
-//        }
-//    }
-//
-//    fun getNextGameBoard(): Board {
-//        if (round % 2 == 1) {
-//            return firstGameBoard
-//        } else {
-//            return secondGameBoard
-//        }
-//    }
-//
-//
-//    fun computeNextBoard(){
-//        val currentBoard = getCurrentGameBoard()
-//        var nextBoard = getNextGameBoard()
-//    for  (i in 0 until height)  {
-//        for  (j in 0 until width)  {
-//            nextBoard.setCell(i, j, currentBoard.livesNextRound(i,j))
-//        }
-//    }
-//    }
 
     fun playRound() {
         board.updateBoard()
         round += 1
     }
 
-    fun processInput(keyType: KeyType) {
+    fun processInput(control: Control) {
         println("Selected: $selectedRow, $selectedColumn")
-        when (keyType) {
-            KeyType.ArrowLeft -> selectedColumn = (selectedColumn - 1) % board.width
-            KeyType.ArrowRight -> selectedColumn= (selectedColumn + 1) % board.width
-            KeyType.ArrowUp -> selectedRow = (selectedRow - 1) % board.height
-            KeyType.ArrowDown -> selectedRow = (selectedRow + 1) % board.height
-            KeyType.MouseEvent -> println("mouse clicked")
+        when (control) {
+            Control.Left -> selectedColumn = (selectedColumn - 1) % board.width
+            Control.Right -> selectedColumn = (selectedColumn + 1) % board.width
+            Control.Up -> selectedRow = (selectedRow - 1) % board.height
+            Control.Down -> selectedRow = (selectedRow + 1) % board.height
+            Control.Select -> board.toggle(selectedRow, selectedColumn)
             else -> {}
         }
-
     }
-
-
 }
 
 
 class Board(val height: Int, val width: Int) {
     private var gameBoard: Array<Array<Boolean>> = Array(height) { Array(width) { false } }
-    // var secondGameBoard:Array<Array<Boolean>> =  Array(height) { Array(width) { false } }
-    // var round = 0
 
-    //    fun getCurrentGameBoard(): Array<Array<Boolean>> {
-//        if (round % 2 == 0) {return fistGameBoard}
-//
-//        else{return secondGameBoard}
-//    }
     constructor(gameBoard: Array<Array<Boolean>>) : this(gameBoard.size, gameBoard[0].size) {
         if (gameBoard.map { line -> line.size }.toSet().size != 1) {
             throw Error("Board must be a rectangle")
@@ -260,41 +184,22 @@ class Board(val height: Int, val width: Int) {
         }
     }
 
-
     private fun countNeighbours(row: Int, column: Int): Int {
         var acc = 0
         for (i in max(0, row - 1)..min(row + 1, height - 1)) {
             for (j in max(0, column - 1)..min(column + 1, width - 1)) {
-                //print("line${row + i} column ${column + j} ")
                 if ((i != row || j != column) && gameBoard[i][j]) {
                     acc += 1
-                    //  print("alive")
                 }
-                //println()
             }
         }
         return acc
     }
 
-
-//    private fun isOnBoard(row: Int, column: Int): Boolean {
-//        return row >= 0 && column >= 0 && row < width && column < height
-//    }
-
-//    private fun isLivingCell(row: Int, column: Int): Boolean {
-//        return if (isOnBoard(row, column)) {
-//            gameBoard[row][column]
-//        } else {
-//            false
-//        }
-//    }
-
-
     private fun livesNextRound(row: Int, column: Int): Boolean {
         val neighbours = countNeighbours(row, column)
         return gameBoard[row][column] && (neighbours == 2 || neighbours == 3) || !gameBoard[row][column] && neighbours == 3
     }
-
 
     private fun computeNextBoard(): Array<Array<Boolean>> {
         val nextBoard = Array(height) { Array(width) { false } }
@@ -313,12 +218,13 @@ class Board(val height: Int, val width: Int) {
     override fun toString(): String {
         return "-".repeat(2 * width + 1) + "\n" + (gameBoard.map { line -> line.map { cell -> if (cell) "x" else " " } }
             .map { line -> "|" + line.joinToString(" ") + "|" }).joinToString("\n") + "\n" + "-".repeat(2 * width + 1)
-
     }
-
 
     fun getAt(row: Int, column: Int): Boolean {
         return gameBoard[row][column]
     }
 
+    fun toggle(selectedRow: Int, selectedColumn: Int) {
+        gameBoard[selectedRow][selectedColumn] = !gameBoard[selectedRow][selectedColumn]
+    }
 }
