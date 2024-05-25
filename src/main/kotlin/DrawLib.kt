@@ -65,4 +65,8 @@ class RectangleDrawer(private val terminal: Screen) {
     fun refresh() {
         terminal.refresh()
     }
+
+    fun startScreen(){
+        terminal.startScreen()
+    }
 }
