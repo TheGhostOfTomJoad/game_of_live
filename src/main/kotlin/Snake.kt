@@ -50,7 +50,7 @@ enum class Direction {
 
 class SnakeController {
     private val snakeUI = SnakeUI()
-    private val snakeModel = SnakeModel(10, 10)
+    private val snakeModel = SnakeModel(20, 20)
 
     fun playGame() {
         var onGoing = true
@@ -71,7 +71,7 @@ class SnakeController {
                 snakeModel.playRound()
             }
             snakeUI.drawGame(snakeModel)
-            sleep(1000)
+            sleep(200)
             gameIsLost = snakeModel.gameLost()
             gameIsWon = snakeModel.gameIsWon()
         }
@@ -171,11 +171,11 @@ class SnakeUI {
     }
 
     fun showWon() {
-        showString("You have won!!!")
+        showString("You won!!!")
     }
 
     fun showLost() {
-        showString("You have lost!!!")
+        showString("You lost!!!")
     }
 
 
