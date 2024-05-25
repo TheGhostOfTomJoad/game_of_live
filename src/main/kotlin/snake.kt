@@ -64,7 +64,7 @@ class SnakeController {
                 if (pressedKey == SnakeControl.Pause) {
                     onGoing = !onGoing
                 } else {
-                    snakeModel.processInput(pressedKey)
+                    snakeModel.setSnakeDirection(pressedKey.toDirection())
                 }
             }
             if (onGoing) {
@@ -101,12 +101,34 @@ class SnakeUI {
 
     fun drawGame(model: SnakeModel) {
         rectangleDrawer.clear()
-        for (tailCoord in model.getSnakeCoordinates()) {
-            rectangleDrawer.drawSquare(tailCoord.y, tailCoord.x, TextColor.ANSI.GREEN)
-        }
-        val appleCoord = model.getAppleCoordinates()
-        rectangleDrawer.drawSquare(appleCoord.y, appleCoord.x, TextColor.ANSI.RED)
+        rectangleDrawer.updateSquareSize(model.rows + 2, model.cols +2)
+        drawSnake(model)
+        drawBorder(model)
+        drawApple(model)
         rectangleDrawer.refresh()
+    }
+
+    private fun drawSnake(model: SnakeModel) {
+        for (tailCoord in model.getSnakeCoordinates()) {
+            rectangleDrawer.drawSquare(tailCoord.y + 1, tailCoord.x + 1, TextColor.ANSI.GREEN)
+        }
+    }
+
+    private fun drawApple(model: SnakeModel) {
+        val appleCoord = model.getAppleCoordinates()
+        rectangleDrawer.drawSquare(appleCoord.y + 1, appleCoord.x + 1, TextColor.ANSI.RED)
+    }
+
+    private fun drawBorder(model: SnakeModel) {
+        for (i in 0..model.cols) {
+            rectangleDrawer.drawSquare(0, i, TextColor.ANSI.CYAN)
+            rectangleDrawer.drawSquare(model.rows, i, TextColor.ANSI.CYAN)
+        }
+
+        for (i in 0..model.rows) {
+            rectangleDrawer.drawSquare(i, 0, TextColor.ANSI.CYAN)
+            rectangleDrawer.drawSquare(i, model.cols + 1, TextColor.ANSI.CYAN)
+        }
     }
 
     private fun keyStrokeToSnakeControl(keystroke: KeyStroke): SnakeControl? {
@@ -218,7 +240,7 @@ class SnakeModel(val rows: Int, val cols: Int) {
     private fun headIsOnBoard(): Boolean {
         val snakeHeadX = snake.getHead().x
         val snakeHeadY = snake.getHead().y
-        return snakeHeadX < cols - 1 && snakeHeadX > 0 && snakeHeadY < cols - 1 && snakeHeadY > 0
+        return snakeHeadX <= cols - 1 && snakeHeadX >= 0 && snakeHeadY < cols - 1 && snakeHeadY >= 0
     }
 
     private fun tailBitten(): Boolean {
@@ -281,8 +303,8 @@ class SnakeModel(val rows: Int, val cols: Int) {
         return acc
     }
 
-    fun processInput(snakeControl: SnakeControl) {
-        snake.setDirection2(snakeControl.toDirection())
+    fun setSnakeDirection(direction: Direction) {
+        snake.setDirection2(direction)
     }
 
     fun getSnakeCoordinates(): List<V2> {
