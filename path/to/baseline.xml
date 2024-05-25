@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>InvalidPackageDeclaration:DrawLib.kt$package org.example</ID>
+    <ID>InvalidPackageDeclaration:Main.kt$package org.example</ID>
+    <ID>InvalidPackageDeclaration:snake.kt$package org.example</ID>
+    <ID>InvalidPackageDeclaration:vector2.kt$package org.example</ID>
+    <ID>MagicNumber:DrawLib.kt$RectangleDrawer$3</ID>
+    <ID>MagicNumber:Main.kt$Board$3</ID>
+    <ID>MagicNumber:Main.kt$Controller$500</ID>
+    <ID>MagicNumber:snake.kt$Snake$3</ID>
+    <ID>MagicNumber:snake.kt$Snake$5</ID>
+    <ID>MagicNumber:snake.kt$SnakeController$10</ID>
+    <ID>MagicNumber:snake.kt$SnakeController$1000</ID>
+    <ID>MagicNumber:snake.kt$SnakeModel$4</ID>
+    <ID>MagicNumber:snake.kt$SnakeUI$5</ID>
+    <ID>MatchingDeclarationName:DrawLib.kt$RectangleDrawer</ID>
+    <ID>MatchingDeclarationName:vector2.kt$V2</ID>
+    <ID>MaxLineLength:Main.kt$Board$return gameBoard[row][column] &amp;&amp; (neighbours == 2 || neighbours == 3) || !gameBoard[row][column] &amp;&amp; neighbours == 3</ID>
+    <ID>NewLineAtEndOfFile:DrawLib.kt$org.example.DrawLib.kt</ID>
+    <ID>NewLineAtEndOfFile:Main.kt$org.example.Main.kt</ID>
+    <ID>NewLineAtEndOfFile:vector2.kt$org.example.vector2.kt</ID>
+    <ID>TooGenericExceptionThrown:Main.kt$Board$throw Error("Board must be a rectangle")</ID>
+    <ID>TooGenericExceptionThrown:snake.kt$SnakeControl$throw Error("this should never happen")</ID>
+    <ID>TooManyFunctions:DrawLib.kt$RectangleDrawer</ID>
+    <ID>TooManyFunctions:snake.kt$SnakeModel</ID>
+    <ID>UnusedParameter:Main.kt$GUI$round: Int</ID>
+  </CurrentIssues>
+</SmellBaseline>

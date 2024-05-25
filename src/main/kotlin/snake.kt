@@ -1,6 +1,7 @@
 package org.example
 
 import com.googlecode.lanterna.TextColor
+import com.googlecode.lanterna.graphics.TextGraphics
 import com.googlecode.lanterna.input.KeyStroke
 import com.googlecode.lanterna.input.KeyType
 import com.googlecode.lanterna.screen.TerminalScreen
@@ -74,6 +75,11 @@ class SnakeController {
             gameIsLost = snakeModel.gameLost()
             gameIsWon = snakeModel.gameIsWon()
         }
+        if (gameIsLost) {
+            snakeUI.showLost()
+        } else {
+            snakeUI.showWon()
+        }
     }
 
 }
@@ -132,6 +138,25 @@ class SnakeUI {
         }
         return null
     }
+
+    private fun showString(str: String) {
+        terminal.clear()
+        val textGraphics: TextGraphics = terminal.newTextGraphics()
+        textGraphics.setForegroundColor(TextColor.ANSI.RED)
+        textGraphics.setBackgroundColor(TextColor.ANSI.GREEN)
+        textGraphics.putString(5, 5, str)
+        terminal.refresh()
+    }
+
+    fun showWon() {
+        showString("You have won!!!")
+    }
+
+    fun showLost() {
+        showString("You have lost!!!")
+    }
+
+
 }
 
 
@@ -148,7 +173,7 @@ class Snake {
     }
 
     fun move(appleEaten: Boolean) {
-        tail.addFirst(head)
+        tail.add(0,head)
         if (!appleEaten) {
             tail.removeLast()
         }
