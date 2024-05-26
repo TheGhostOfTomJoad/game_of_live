@@ -83,10 +83,10 @@ class GUI {
         tileDrawer.updateSquareSize(gameBoard.height, gameBoard.width)
         for (i in 0 until gameBoard.height) {
             for (j in 0 until gameBoard.width) {
-                if (gameBoard.getAt(i, j)) tileDrawer.drawSquare(i, j, TextColor.ANSI.GREEN)
+                if (gameBoard.getAt(i, j)) tileDrawer.drawSquare(j, i, TextColor.ANSI.GREEN)
             }
         }
-        tileDrawer.drawSquareInner(model.getSelectedX(), model.getSelectedY(), TextColor.ANSI.RED)
+        tileDrawer.drawSquareInner(model.getSelectedColumn(),model.getSelectedRow(), TextColor.ANSI.RED)
         tileDrawer.refresh()
     }
 
@@ -134,11 +134,11 @@ class Model(boardString: String) {
         return round
     }
 
-    fun getSelectedX(): Int {
+    fun getSelectedRow(): Int {
         return selectedRow
     }
 
-    fun getSelectedY(): Int {
+    fun getSelectedColumn(): Int {
         return selectedColumn
     }
 

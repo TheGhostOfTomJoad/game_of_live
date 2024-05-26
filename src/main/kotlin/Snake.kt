@@ -110,24 +110,24 @@ class SnakeUI {
 
     private fun drawSnake(model: SnakeModel) {
         for (tailCoord in model.getSnakeCoordinates()) {
-            rectangleDrawer.drawSquare(tailCoord.y + 1, tailCoord.x + 1, TextColor.ANSI.GREEN)
+            rectangleDrawer.drawSquare(tailCoord.x + 1, tailCoord.y + 1, TextColor.ANSI.GREEN)
         }
     }
 
     private fun drawApple(model: SnakeModel) {
         val appleCoord = model.getAppleCoordinates()
-        rectangleDrawer.drawSquare(appleCoord.y + 1, appleCoord.x + 1, TextColor.ANSI.RED)
+        rectangleDrawer.drawSquare(appleCoord.x + 1, appleCoord.y + 1, TextColor.ANSI.RED)
     }
 
     private fun drawBorder(model: SnakeModel) {
         for (i in 0..model.cols) {
-            rectangleDrawer.drawSquare(0, i, TextColor.ANSI.CYAN)
-            rectangleDrawer.drawSquare(model.rows, i, TextColor.ANSI.CYAN)
+            rectangleDrawer.drawSquare(i, 0, TextColor.ANSI.CYAN)
+            rectangleDrawer.drawSquare( i, model.rows, TextColor.ANSI.CYAN)
         }
 
         for (i in 0..model.rows) {
-            rectangleDrawer.drawSquare(i, 0, TextColor.ANSI.CYAN)
-            rectangleDrawer.drawSquare(i, model.cols + 1, TextColor.ANSI.CYAN)
+            rectangleDrawer.drawSquare( 0, i, TextColor.ANSI.CYAN)
+            rectangleDrawer.drawSquare(model.cols + 1, i , TextColor.ANSI.CYAN)
         }
     }
 
