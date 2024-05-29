@@ -1,6 +1,11 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+
+
 plugins {
-    kotlin("jvm") version "2.0.0"
+    kotlin("jvm")
     id("io.gitlab.arturbosch.detekt").version("1.23.6")
+    id("org.jetbrains.compose")
+    //id("org.jetbrains.kotlin.plugin.compose")
 }
 
 group = "org.example"
@@ -8,6 +13,8 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    google()
 }
 
 dependencies {
@@ -17,6 +24,8 @@ dependencies {
     // https://mvnrepository.com/artifact/com.googlecode.lanterna/lanterna
     implementation("com.googlecode.lanterna:lanterna:3.1.2")
     //implementation("com.github.ajalt.mordant:mordant:2.6.0")
+    implementation(compose.desktop.currentOs)
+
 }
 
 
@@ -27,6 +36,18 @@ tasks.test {
 }
 kotlin {
     jvmToolchain(20)
+}
+
+compose.desktop {
+    application {
+        mainClass = "MainKt"
+
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "SnakeCompose"
+            packageVersion = "1.0.0"
+        }
+    }
 }
 
 

@@ -227,7 +227,7 @@ class Snake {
 
 }
 
-class SnakeModel(val rows: Int, val cols: Int) {
+data class SnakeModel(val rows: Int, val cols: Int) {
     private val snake: Snake = Snake()
     private var points = 0
     private var appleEatenLastRound = false
@@ -275,12 +275,12 @@ class SnakeModel(val rows: Int, val cols: Int) {
     fun playRound() {
         snake.move(appleEatenLastRound)
         appleEatenLastRound = false
-        when {
-            appleEatenThisRound() -> {
+        if (appleEatenThisRound())
+             {
                 appleEatenLastRound = true; points += 1;setNewApple()
             }
         }
-    }
+
 
     override fun toString(): String {
         var acc = ""
