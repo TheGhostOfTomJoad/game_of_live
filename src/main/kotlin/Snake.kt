@@ -1,11 +1,10 @@
-package org.example
-
 import com.googlecode.lanterna.TextColor
 import com.googlecode.lanterna.graphics.TextGraphics
 import com.googlecode.lanterna.input.KeyStroke
 import com.googlecode.lanterna.input.KeyType
 import com.googlecode.lanterna.screen.TerminalScreen
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory
+import org.example.V2
 import java.lang.Thread.sleep
 import kotlin.random.Random
 
@@ -76,9 +75,9 @@ class SnakeController {
             gameIsWon = snakeModel.gameIsWon()
         }
         if (gameIsLost) {
-            snakeUI.showLost()
+            snakeUI.showLost(snakeModel.snakeLen())
         } else {
-            snakeUI.showWon()
+            snakeUI.showWon(snakeModel.snakeLen())
         }
     }
 
@@ -170,12 +169,16 @@ class SnakeUI {
         terminal.refresh()
     }
 
-    fun showWon() {
-        showString("You won!!!")
+    private fun showPoints(points:Int): String {
+        return "You have $points ${if (points == 1) "point" else "points"}" + "!"
     }
 
-    fun showLost() {
-        showString("You lost!!!")
+    fun showWon(points: Int) {
+        showString("You won!" + showPoints(points))
+    }
+
+    fun showLost(points: Int) {
+        showString("Game Over!" + showPoints(points))
     }
 
 

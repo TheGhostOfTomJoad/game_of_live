@@ -1,6 +1,7 @@
 package org.example
 
 
+import RectangleDrawer
 import com.googlecode.lanterna.TextColor
 import com.googlecode.lanterna.input.KeyStroke
 import com.googlecode.lanterna.input.KeyType

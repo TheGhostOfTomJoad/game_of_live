@@ -1,5 +1,3 @@
-package org.example
-
 import com.googlecode.lanterna.TerminalSize
 import com.googlecode.lanterna.TextCharacter.fromCharacter
 import com.googlecode.lanterna.TextColor
