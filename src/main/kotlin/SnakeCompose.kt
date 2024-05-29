@@ -35,36 +35,43 @@ fun App() {
     val snakeState by remember { mutableStateOf(SnakeModel(20, 20)) }
     var snakeCoords by remember { mutableStateOf(snakeState.getSnakeCoordinates()) }
     var appleCoords by remember { mutableStateOf(snakeState.getAppleCoordinates()) }
+    var gameIsWon by remember { mutableStateOf(false) }
+    var gameIsLost by remember { mutableStateOf(false) }
     MaterialTheme {
 
-        LaunchedEffect(Unit) {
+        if (gameIsLost) {
+            Text("Game Over. You have " + snakeState.snakeLen() + " Points!")
+        } else {
+            LaunchedEffect(Unit) {
 
-            while (true) {
-                delay(400L)
-                snakeState.playRound()
-                snakeCoords = snakeState.getSnakeCoordinates()
-                appleCoords = snakeState.getAppleCoordinates()
-            }
-        }
-
-        Row(Modifier.fillMaxSize()) {
-            makeDirectionButton(snakeState, Direction.North)
-            makeDirectionButton(snakeState, Direction.East)
-            makeDirectionButton(snakeState, Direction.West)
-            makeDirectionButton(snakeState, Direction.South)
-            Button(onClick = {
-                snakeState.playRound()
-                snakeCoords = snakeState.getSnakeCoordinates()
-                appleCoords = snakeState.getAppleCoordinates()
-            }) {
-                Text("Run")
+                while (!gameIsWon && !gameIsLost) {
+                    delay(1000L)
+                    snakeState.playRound()
+                    snakeCoords = snakeState.getSnakeCoordinates()
+                    appleCoords = snakeState.getAppleCoordinates()
+                    gameIsWon = snakeState.gameIsWon()
+                    gameIsLost = snakeState.gameLost()
+                }
             }
 
-        }
+            Row(Modifier.fillMaxSize()) {
+                makeDirectionButton(snakeState, Direction.North)
+                makeDirectionButton(snakeState, Direction.East)
+                makeDirectionButton(snakeState, Direction.West)
+                makeDirectionButton(snakeState, Direction.South)
+                Button(onClick = {
+                    snakeState.playRound()
+                    snakeCoords = snakeState.getSnakeCoordinates()
+                    appleCoords = snakeState.getAppleCoordinates()
+                }) {
+                    Text("Run")
+                }
 
-        Board(snakeCoords, appleCoords, snakeState.rows, snakeState.cols)
+            }
+
+            Board(snakeCoords, appleCoords, snakeState.rows, snakeState.cols)
+        }
     }
-
 }
 
 @Composable

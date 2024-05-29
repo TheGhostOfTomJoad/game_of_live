@@ -310,4 +310,9 @@ data class SnakeModel(val rows: Int, val cols: Int) {
     fun getSnakeCoordinates(): List<V2> {
         return snake.toList()
     }
+
+    fun snakeLen(): Int {
+        return snake.snakeLen()
+    }
+
 }
