@@ -1,3 +1,4 @@
+import com.github.ajalt.mordant.*
 import com.github.ajalt.mordant.terminal.Terminal
 
 class Mordant {
