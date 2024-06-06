@@ -25,6 +25,14 @@ dependencies {
     implementation("com.googlecode.lanterna:lanterna:3.1.2")
     implementation("com.github.ajalt.mordant:mordant:2.6.0")
     implementation(compose.desktop.currentOs)
+    // https://mvnrepository.com/artifact/org.openrndr/openrndr-draw
+    implementation("org.openrndr:openrndr:0.4.2")
+    implementation("org.openrndr:openrndr-draw:0.4.4")
+    implementation("org.openrndr:openrndr-gl3-natives-linux-x64:0.4.4")
+    implementation("org.openrndr:openrndr-gl3:0.4.4")
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    implementation("org.slf4j:slf4j-simple:2.0.13")
+    implementation("org.lwjgl:lwjgl-opengl:3.3.3")
 
 }
 
