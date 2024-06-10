@@ -62,7 +62,7 @@ class SnakeController {
                 continue
             }
             snakeModel.playRound()
-            snakeUI.drawGame(snakeModel)
+            snakeUI.drawGame(snakeModel.rows, snakeModel.cols, snakeModel.getAppleCoordinates(), snakeModel.getSnakeCoordinates())
             sleep(200)
             gameIsLost = snakeModel.gameLost()
             gameIsWon = snakeModel.gameIsWon()
@@ -104,16 +104,16 @@ class SnakeController {
             rectangleDrawer.startScreen()
         }
 
-        fun setInitialSquareSize(height: Int, width: Int) {
-            rectangleDrawer.setInitialSquareSize(height, width)
+        fun setInitialSquareSize(rows: Int, cols: Int) {
+            rectangleDrawer.setInitialSquareSize(rows, cols)
         }
 
-        fun drawGame(model: SnakeModel) {
+        fun drawGame(rows: Int, cols: Int,  appleCoordinates: V2, snakeCoordinates: List<V2>) {
             rectangleDrawer.clear()
-            rectangleDrawer.updateSquareSize(model.rows + 2, model.cols + 2)
-            drawSnake(model.getSnakeCoordinates())
-            drawBorder(model.rows , model.cols)
-            drawApple(model.getAppleCoordinates())
+            rectangleDrawer.updateSquareSize(rows + 2 * borderSize, cols + 2 * borderSize)
+            drawSnake(snakeCoordinates)
+            drawBorder(rows , cols)
+            drawApple(appleCoordinates)
             rectangleDrawer.refresh()
         }
 
@@ -151,12 +151,12 @@ class SnakeController {
         }
 
         private fun showString(str: String) {
-            terminal.clear()
+            rectangleDrawer.clear()
             val textGraphics: TextGraphics = terminal.newTextGraphics()
             textGraphics.setForegroundColor(TextColor.ANSI.RED)
             textGraphics.setBackgroundColor(TextColor.ANSI.GREEN)
             textGraphics.putString(5, 5, str)
-            terminal.refresh()
+            rectangleDrawer.refresh()
         }
 
         private fun showPoints(points: Int): String {
