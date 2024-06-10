@@ -53,7 +53,6 @@ class SnakeController {
 
     fun playGame() {
         var onGoing = true
-        snakeUI.initTerminalConfig()
         snakeUI.setInitialSquareSize(snakeModel.rows, snakeModel.cols)
         var gameIsWon = false
         var gameIsLost = false
@@ -70,16 +69,10 @@ class SnakeController {
 
 
         }
-        showEndScreen(gameIsLost)
+        snakeUI.showEndScreen(gameIsLost,snakeModel.snakeLen())
     }
 
-    private fun showEndScreen(gameIsLost: Boolean) {
-        if (gameIsLost) {
-            snakeUI.showLost(snakeModel.snakeLen())
-        } else {
-            snakeUI.showWon(snakeModel.snakeLen())
-        }
-    }
+
 
     private fun processUserInput(onGoing: Boolean): Boolean {
         val pressedKey = snakeUI.getPressedKey()
@@ -99,11 +92,15 @@ class SnakeController {
     class SnakeUI {
         private val terminal: TerminalScreen = DefaultTerminalFactory().createScreen()
         private val rectangleDrawer = RectangleDrawer(terminal)
+        private val borderSize = 1
+        init {
+            initTerminalConfig()
+        }
         fun printGame(model: SnakeModel) {
             println(model)
         }
 
-        fun initTerminalConfig() {
+        private fun initTerminalConfig() {
             rectangleDrawer.startScreen()
         }
 
@@ -114,32 +111,33 @@ class SnakeController {
         fun drawGame(model: SnakeModel) {
             rectangleDrawer.clear()
             rectangleDrawer.updateSquareSize(model.rows + 2, model.cols + 2)
-            drawSnake(model)
-            drawBorder(model)
-            drawApple(model)
+            drawSnake(model.getSnakeCoordinates())
+            drawBorder(model.rows , model.cols)
+            drawApple(model.getAppleCoordinates())
             rectangleDrawer.refresh()
         }
 
-        private fun drawSnake(model: SnakeModel) {
-            for (tailCoord in model.getSnakeCoordinates()) {
-                rectangleDrawer.drawSquare(tailCoord.x + 1, tailCoord.y + 1, TextColor.ANSI.GREEN)
+        private fun drawSnake(snakeCoordinates: List<V2>) {
+            for (tailCoord in snakeCoordinates) {
+
+                rectangleDrawer.drawSquare(tailCoord.x + borderSize, tailCoord.y + borderSize, TextColor.ANSI.GREEN)
             }
         }
 
-        private fun drawApple(model: SnakeModel) {
-            val appleCoord = model.getAppleCoordinates()
-            rectangleDrawer.drawSquare(appleCoord.x + 1, appleCoord.y + 1, TextColor.ANSI.RED)
+        private fun drawApple(appleCoord:V2) {
+
+            rectangleDrawer.drawSquare(appleCoord.x + borderSize, appleCoord.y + borderSize, TextColor.ANSI.RED)
         }
 
-        private fun drawBorder(model: SnakeModel) {
-            for (i in 0..model.cols) {
+        private fun drawBorder(rows: Int, cols: Int) {
+            for (i in 0..cols) {
                 rectangleDrawer.drawSquare(i, 0, TextColor.ANSI.CYAN)
-                rectangleDrawer.drawSquare(i, model.rows, TextColor.ANSI.CYAN)
+                rectangleDrawer.drawSquare(i, rows, TextColor.ANSI.CYAN)
             }
 
-            for (i in 0..model.rows) {
+            for (i in 0..rows) {
                 rectangleDrawer.drawSquare(0, i, TextColor.ANSI.CYAN)
-                rectangleDrawer.drawSquare(model.cols + 1, i, TextColor.ANSI.CYAN)
+                rectangleDrawer.drawSquare(cols + 1, i, TextColor.ANSI.CYAN)
             }
         }
 
@@ -165,12 +163,21 @@ class SnakeController {
             return "You have $points ${if (points == 1) "point" else "points"}" + "!"
         }
 
-        fun showWon(points: Int) {
+        private fun showWon(points: Int) {
             showString("You won!" + showPoints(points))
         }
 
-        fun showLost(points: Int) {
+        private fun showLost(points: Int) {
             showString("Game Over!" + showPoints(points))
+        }
+
+
+        fun showEndScreen(gameIsLost: Boolean, points: Int) {
+            if (gameIsLost) {
+                showLost(points)
+            } else {
+                showWon(points)
+            }
         }
 
 
